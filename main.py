@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 from bson import ObjectId
 import asyncio
 from contextlib import asynccontextmanager
+from fastapi.middleware.cors import CORSMiddleware
 
 # Load environment variables
 load_dotenv()
@@ -84,6 +85,15 @@ async def lifespan(app: FastAPI):
 
 # Initialize FastAPI app with lifespan
 app = FastAPI(title="Discount Hunter API", lifespan=lifespan)
+
+# Configure CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allows all origins
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all methods
+    allow_headers=["*"],  # Allows all headers
+)
 
 # API endpoints
 @app.get("/")
