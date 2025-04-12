@@ -13,7 +13,7 @@ from contextlib import asynccontextmanager
 load_dotenv()
 
 # MongoDB connection
-MONGODB_URL = "mongodb+srv://nekadruga44:blwHFub8RTrALutY@cluster0.kxfh4cw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+MONGODB_URL = "mongodb+srv://nekadruga44:blwHFub8RTrALutY@cluster0.kxfh4cw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0&tls=true"
 client = AsyncIOMotorClient(MONGODB_URL)
 db = client.discount_hunter
 
