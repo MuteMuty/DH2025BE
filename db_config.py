@@ -21,7 +21,7 @@ async def init_database():
     await clear_database()
     
     # Sample stores
-    stores = ["Lidl", "Kaufland", "Billa", "Tesco", "Albert"]
+    stores = ["Lidl", "Hofer", "Spar", "Mercator", "Eurospin"]
     
     # Create dummy discounts
     discounts = []
