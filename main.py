@@ -107,7 +107,7 @@ async def search_items(
     sort_by: Optional[str] = None,
     min_discount: Optional[float] = None,
     max_price: Optional[float] = None,
-    limit: int = 10,
+    limit: int = 500,
     offset: int = 0
 ):
     try:
