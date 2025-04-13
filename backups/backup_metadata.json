@@ -1,0 +1,8 @@
+{
+  "timestamp": "2025-04-13T01:41:41.040789",
+  "collections": {
+    "shopping_cart": "backups/shopping_cart_20250413_014140.json",
+    "notifications": "backups/notifications_20250413_014140.json",
+    "discounts": "backups/discounts_20250413_014141.json"
+  }
+}

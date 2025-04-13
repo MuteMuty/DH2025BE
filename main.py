@@ -107,7 +107,7 @@ async def search_items(
     sort_by: Optional[str] = None,
     min_discount: Optional[float] = None,
     max_price: Optional[float] = None,
-    limit: int = 10,
+    limit: int = 500,
     offset: int = 0
 ):
     try:
@@ -206,13 +206,39 @@ async def add_to_cart(item: ShoppingCartItem):
 @app.get("/api/shopping-cart/{user_id}")
 async def get_shopping_cart(user_id: str):
     try:
-        items = await db.shopping_cart.find({"user_id": user_id}).to_list(length=100)
+        # Get shopping cart items
+        cart_items = await db.shopping_cart.find({"user_id": user_id}).to_list(length=100)
         
-        # Convert ObjectId to string for JSON serialization
-        for item in items:
-            item["_id"] = str(item["_id"])
+        # Get all discount IDs from cart items
+        discount_ids = [ObjectId(item["discount_id"]) for item in cart_items]
         
-        return items
+        # Get full discount details for all items in cart
+        discounts = await db.discounts.find({
+            "_id": {"$in": discount_ids}
+        }).to_list(length=100)
+        
+        # Create a map of discount_id to discount details
+        discount_map = {str(discount["_id"]): discount for discount in discounts}
+        
+        # Combine cart items with their discount details
+        result = []
+        for item in cart_items:
+            discount_id = str(item["discount_id"])
+            if discount_id in discount_map:
+                # Convert ObjectId to string for JSON serialization
+                discount = discount_map[discount_id]
+                discount["_id"] = str(discount["_id"])
+                if "bounding_box" in discount and discount["bounding_box"]:
+                    discount["bounding_box"] = dict(discount["bounding_box"])
+                
+                # Combine cart item with discount details
+                result.append({
+                    "cart_item_id": str(item["_id"]),
+                    "added_date": item["added_date"],
+                    "discount": discount
+                })
+        
+        return result
     except Exception as e:
         print(f"Error in get_shopping_cart: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
