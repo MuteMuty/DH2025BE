@@ -45,46 +45,8 @@ class Notification(BaseModel):
     user_id: str
     device_id: str
 
-# Helper functions
-async def update_trending_scores():
-    """Update trending scores based on shopping cart activity"""
-    # Get all active discounts
-    active_discounts = await db.discounts.find({
-        "offer_end_date": {"$gt": datetime.utcnow()}
-    }).to_list(length=None)
-    
-    for discount in active_discounts:
-        # Count how many users have this item in their cart
-        cart_count = await db.shopping_cart.count_documents({
-            "discount_id": str(discount["_id"])
-        })
-        
-        # Update trending score
-        await db.discounts.update_one(
-            {"_id": discount["_id"]},
-            {"$set": {"trending_score": cart_count}}
-        )
-
-# Background task for updating trending scores
-async def update_scores_periodically():
-    while True:
-        await update_trending_scores()
-        await asyncio.sleep(3600)  # Update every hour
-
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    # Startup
-    trending_task = asyncio.create_task(update_scores_periodically())
-    yield
-    # Shutdown
-    trending_task.cancel()
-    try:
-        await trending_task
-    except asyncio.CancelledError:
-        pass
-
 # Initialize FastAPI app with lifespan
-app = FastAPI(title="Discount Hunter API", lifespan=lifespan)
+app = FastAPI(title="Discount Hunter API")
 
 # Configure CORS
 app.add_middleware(
@@ -195,9 +157,6 @@ async def add_to_cart(item: ShoppingCartItem):
         # Add to shopping cart
         result = await db.shopping_cart.insert_one(item.dict())
         
-        # Update trending scores
-        await update_trending_scores()
-        
         return {"message": "Item added to cart", "id": str(result.inserted_id)}
     except Exception as e:
         print(f"Error in add_to_cart: {str(e)}")
@@ -253,9 +212,6 @@ async def remove_from_cart(user_id: str, item_id: str):
         
         if result.deleted_count == 0:
             raise HTTPException(status_code=404, detail="Item not found in cart")
-        
-        # Update trending scores
-        await update_trending_scores()
         
         return {"message": "Item removed from cart"}
     except Exception as e:
