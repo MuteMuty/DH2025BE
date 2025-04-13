@@ -1,0 +1,38 @@
+[
+  {
+    "_id": "67faf711c5be8b760dc11db9",
+    "user_id": "string",
+    "discount_id": "67facac0ca63156ec5dee4a8",
+    "added_date": "2025-04-12T23:24:53.435000"
+  },
+  {
+    "_id": "67faf74ec5be8b760dc11dba",
+    "user_id": "string",
+    "discount_id": "67facac1ca63156ec5dee4a9",
+    "added_date": "2025-04-12T23:29:18.429000"
+  },
+  {
+    "_id": "67faf82cc5be8b760dc11dbb",
+    "user_id": "6f0e74d3-01be-4d66-a7ea-ff8df8755a1f",
+    "discount_id": "67facac1ca63156ec5dee4ac",
+    "added_date": "2025-04-12T23:33:00.062000"
+  },
+  {
+    "_id": "67faf89ec5be8b760dc11dbc",
+    "user_id": "6f0e74d3-01be-4d66-a7ea-ff8df8755a1f",
+    "discount_id": "67facac0ca63156ec5dee4a8",
+    "added_date": "2025-04-12T23:34:54.315000"
+  },
+  {
+    "_id": "67faf8c6c5be8b760dc11dbd",
+    "user_id": "6f0e74d3-01be-4d66-a7ea-ff8df8755a1f",
+    "discount_id": "67facac1ca63156ec5dee4a9",
+    "added_date": "2025-04-12T23:35:34.041000"
+  },
+  {
+    "_id": "67faf8ebc5be8b760dc11dbe",
+    "user_id": "6f0e74d3-01be-4d66-a7ea-ff8df8755a1f",
+    "discount_id": "67facb0eca63156ec5dee4b2",
+    "added_date": "2025-04-12T23:36:11.934000"
+  }
+]

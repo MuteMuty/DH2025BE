@@ -7,6 +7,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 import requests
 import json
 import time
+import re
 from datetime import datetime
 
 def get_latest_catalog_data():
@@ -97,29 +98,38 @@ def get_latest_catalog_data():
             # Wait for the new page to load
             wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
             
-            # Step 3: Get all network requests
+            # Step 3: Get all network requests and find the Issuu embed URL
             print("\nNetwork requests after clicking the link:")
             print("-" * 80)
             
             logs = driver.get_log('performance')
-            json_url = None
+            issuu_hash = None
             
-            # Look for the JSON URL in the network logs
+            # Look for the Issuu embed URL in the network logs
             for entry in logs:
                 try:
                     log = json.loads(entry['message'])['message']
                     if 'Network.requestWillBeSent' in log['method']:
                         url = log['params']['request']['url']
-                        print(f"Request URL: {url}")
+                        # print(f"Request URL: {url}")
                         
-                        if 'reader3.isu.pub/vsikatalogi/hofer_' in url and '/reader3_4.json' in url:
-                            json_url = url
-                            print(f"\nFound JSON data URL: {url}")
+                        # Look for the Issuu embed URL pattern
+                        if 'e.issuu.com/embed.html' in url and 'd=hofer_' in url:
+                            # Extract the hash using regex
+                            match = re.search(r'hofer_([a-f0-9]+)', url)
+                            if match:
+                                issuu_hash = match.group(1)
+                                print(f"\nFound Issuu hash: {issuu_hash}")
+                                break
                 except:
                     continue
             
-            if not json_url:
-                raise Exception("JSON data URL not found")
+            if not issuu_hash:
+                raise Exception("Issuu hash not found")
+            
+            # Construct the JSON URL using the hash
+            json_url = f"https://reader3.isu.pub/vsikatalogi/hofer_{issuu_hash}/reader3_4.json"
+            print(f"\nConstructed JSON URL: {json_url}")
             
             # Step 4: Fetch the JSON data
             headers = {
@@ -128,13 +138,29 @@ def get_latest_catalog_data():
             json_response = requests.get(json_url, headers=headers)
             json_response.raise_for_status()
             
-            # Parse and return the JSON data
+            # Parse the JSON data
             catalog_data = json_response.json()
+            
+            # Extract image URLs from the pages
+            image_urls = []
+            if 'document' in catalog_data and 'pages' in catalog_data['document']:
+                for page in catalog_data['document']['pages']:
+                    if 'imageUri' in page:
+                        # Construct full image URL
+                        image_url = f"https://{page['imageUri']}"
+                        image_urls.append({
+                            'page_number': len(image_urls) + 1,
+                            'url': image_url,
+                            'width': page.get('width'),
+                            'height': page.get('height')
+                        })
             
             return {
                 'catalog_link': catalog_link,
+                'issuu_hash': issuu_hash,
                 'json_url': json_url,
-                'data': catalog_data
+                'image_urls': image_urls,
+                'total_pages': len(image_urls)
             }
             
         finally:
@@ -149,8 +175,11 @@ if __name__ == "__main__":
     result = get_latest_catalog_data()
     if result:
         print(f"\nCatalog page: {result['catalog_link']}")
+        print(f"Issuu hash: {result['issuu_hash']}")
         print(f"JSON data URL: {result['json_url']}")
-        print("\nFirst few items of catalog data:")
-        print(json.dumps(result['data'], indent=2)[:500] + "...")
+        print(f"\nTotal pages: {result['total_pages']}")
+        print("\nImage URLs:")
+        for page in result['image_urls']:
+            print(f"Page {page['page_number']}: {page['url']}")
     else:
         print("Failed to fetch catalog data") 
