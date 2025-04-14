@@ -12,7 +12,7 @@ import time
 
 class CatalogProcessor:
     def __init__(self, offer_start_date=None, offer_end_date=None, max_pages=10):
-        mongo_uri = "mongodb+srv://nekadruga44:blwHFub8RTrALutY@cluster0.kxfh4cw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+        mongo_uri = "connection_url_string"
         self.client = MongoClient(mongo_uri)
         self.db = self.client.discount_hunter  
         

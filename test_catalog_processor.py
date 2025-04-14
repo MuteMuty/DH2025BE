@@ -26,7 +26,7 @@ def test_mongodb_integration(store="Spar"):
         processor.display_products(store_name=store, limit=5)
         
         print("\nVerifying MongoDB data directly:")
-        mongo_uri = "mongodb+srv://nekadruga44:blwHFub8RTrALutY@cluster0.kxfh4cw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+        mongo_uri = "connection_url_string"
         client = MongoClient(mongo_uri)
         db = client.discount_hunter
         discounts = db.discounts

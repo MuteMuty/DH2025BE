@@ -4,7 +4,7 @@ import asyncio
 from bson import ObjectId
 
 # MongoDB connection
-MONGODB_URL = "mongodb+srv://nekadruga44:blwHFub8RTrALutY@cluster0.kxfh4cw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+MONGODB_URL = "connection_url_string"
 client = AsyncIOMotorClient(MONGODB_URL)
 db = client.discount_hunter
 
